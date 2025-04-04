@@ -73,15 +73,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href}>
-                    <a className={cn(
-                      "flex items-center p-2 text-base font-medium rounded-md transition",
+                    <span className={cn(
+                      "flex items-center p-2 text-base font-medium rounded-md transition cursor-pointer",
                       location === item.href
                         ? "text-primary bg-primary/10"
                         : "text-textSecondary hover:text-textPrimary hover:bg-surfaceLight"
                     )}>
                       <i className={cn(item.icon, "mr-2")}></i>
                       {item.label}
-                    </a>
+                    </span>
                   </Link>
                 </li>
               ))}

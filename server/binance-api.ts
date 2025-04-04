@@ -6,16 +6,17 @@ import {
 } from "@shared/types";
 
 export class BinanceAPI {
-  private apiKey: string | null = null;
-  private apiSecret: string | null = null;
+  apiKey: string | null = null;
+  apiSecret: string | null = null;
   private isTestnet: boolean = true;
 
   constructor() {
     // Initialize with environment variables if available
-    if (process.env.BINANCE_API_KEY && process.env.BINANCE_API_SECRET) {
-      this.apiKey = process.env.BINANCE_API_KEY;
-      this.apiSecret = process.env.BINANCE_API_SECRET;
-      this.isTestnet = process.env.BINANCE_TESTNET === "true";
+    if (process.env.API_KEY && process.env.API_SECRET) {
+      this.apiKey = process.env.API_KEY;
+      this.apiSecret = process.env.API_SECRET;
+      this.isTestnet = process.env.BINANCE_TESTNET === "true" || true;
+      console.log("Initialized Binance API with environment variables");
     }
   }
 

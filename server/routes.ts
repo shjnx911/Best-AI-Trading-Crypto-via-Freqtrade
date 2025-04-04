@@ -513,6 +513,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: `Error fetching system status: ${error}` });
     }
   });
+  
+  app.get("/api/system/connection-status", async (req: Request, res: Response) => {
+    try {
+      const isConnected = binanceAPI.apiKey && binanceAPI.apiSecret ? true : false;
+      res.json({ isConnected });
+    } catch (error) {
+      res.status(500).json({ message: `Error checking connection status: ${error}` });
+    }
+  });
 
   app.get("/api/system/settings", async (req: Request, res: Response) => {
     try {

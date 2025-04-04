@@ -13,34 +13,34 @@
 }
 
 :root {
-  --background: 230 230 15;
-  --foreground: 220 220 230;
-  --card: 22 22 34;
-  --card-foreground: 220 220 230;
-  --popover: 22 22 34;
-  --popover-foreground: 220 220 230;
-  --primary: 158 93% 35%;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 207 90% 68%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 354 93% 63%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 30 30 45;
-  --muted-foreground: 132 142 156;
-  --accent: 226 100% 65%;
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 8% 46%;
+  --accent: 207 90% 68%;
   --accent-foreground: 0 0% 100%;
-  --destructive: 354 93% 63%;
+  --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 43 43 59;
-  --input: 30 30 45;
-  --ring: 158 93% 35%;
-  --sidebar-background: 22 22 34;
-  --sidebar-foreground: 220 220 230;
-  --sidebar-primary: 158 93% 35%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 207 90% 68%;
+  --sidebar-background: 220 14% 96%;
+  --sidebar-foreground: 0 0% 0%;
+  --sidebar-primary: 207 90% 68%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 30 30 45;
-  --sidebar-accent-foreground: 132 142 156;
-  --sidebar-border: 43 43 59;
-  --sidebar-ring: 158 93% 35%;
-  --chart-1: 158 93% 35%;
+  --sidebar-accent: 207 90% 68%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 207 90% 68%;
+  --chart-1: 207 90% 68%;
   --chart-2: 354 93% 63%;
   --chart-3: 226 100% 65%;
   --chart-4: 45 92% 51%;
@@ -143,4 +143,39 @@ input:checked + .slider:before {
   width: 1px;
   background: hsl(var(--foreground));
   margin: 0 auto;
+}
+
+/* Mobile responsiveness */
+@layer utilities {
+  .mobile-container {
+    @apply px-4 py-2 md:px-6 md:py-4;
+  }
+  
+  .mobile-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+  
+  .mobile-flex {
+    @apply flex flex-col md:flex-row items-start md:items-center gap-2;
+  }
+  
+  .save-button {
+    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-all;
+  }
+  
+  .action-button {
+    @apply flex items-center justify-center gap-2 rounded-md px-4 py-2 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+  }
+  
+  .status-indicator {
+    @apply inline-flex h-2.5 w-2.5 rounded-full mr-2;
+  }
+  
+  .status-connected {
+    @apply bg-green-600;
+  }
+  
+  .status-disconnected {
+    @apply bg-red-600;
+  }
 }

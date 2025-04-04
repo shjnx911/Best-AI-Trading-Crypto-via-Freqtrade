@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_ENDPOINTS } from '@/lib/constants';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { AlertTriangle, Shield, Save, RefreshCw, Database, Cpu } from 'lucide-react';
+import { AlertTriangle, Shield, Save, RefreshCw, Database, Cpu, Link as LinkIcon } from 'lucide-react';
 
 export default function SystemSettings() {
   const { toast } = useToast();
@@ -18,6 +18,12 @@ export default function SystemSettings() {
     apiKey: '',
     apiSecret: '',
     isTestnet: true
+  });
+  
+  // Get connection status
+  const { data: connectionStatus } = useQuery({
+    queryKey: [`${API_ENDPOINTS.SYSTEM}/connection-status`],
+    refetchInterval: 5000, // Check every 5 seconds
   });
 
   // Fetch system settings
@@ -109,6 +115,12 @@ export default function SystemSettings() {
     <div className="p-4 lg:p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">System Settings</h1>
+        <div className="flex items-center">
+          <div className={`px-3 py-1.5 rounded-md text-sm flex items-center ${connectionStatus?.isConnected ? 'bg-success/20 text-success' : 'bg-secondary/20 text-secondary'}`}>
+            <LinkIcon className="h-4 w-4 mr-2" />
+            {connectionStatus?.isConnected ? 'Connected to Binance' : 'Not Connected to Binance'}
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="api">
