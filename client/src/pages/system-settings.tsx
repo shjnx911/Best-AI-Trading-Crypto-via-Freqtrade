@@ -93,10 +93,23 @@ export default function SystemSettings() {
   };
 
   const handleUpdateSettings = (updatedSettings: any) => {
-    updateSettingsMutation.mutate({
-      ...systemSettings,
+    // Ensure required fields are present
+    const settingsToUpdate = {
+      userId: 1, // Default user ID
+      telegramEnabled: (systemSettings?.telegramEnabled !== undefined) ? systemSettings.telegramEnabled : false,
+      telegramToken: systemSettings?.telegramToken || '',
+      telegramChatId: systemSettings?.telegramChatId || '',
+      uiTheme: systemSettings?.uiTheme || 'light',
+      accentColor: systemSettings?.accentColor || '#4F9BFF',
+      fontSize: systemSettings?.fontSize || 'medium',
+      chartStyle: systemSettings?.chartStyle || 'candles',
+      logLevel: systemSettings?.logLevel || 'info',
+      backupEnabled: systemSettings?.backupEnabled || false,
+      backupFrequency: systemSettings?.backupFrequency || 'daily',
       ...updatedSettings
-    });
+    };
+    
+    updateSettingsMutation.mutate(settingsToUpdate);
   };
 
   if (isLoadingSettings || isLoadingStatus) {

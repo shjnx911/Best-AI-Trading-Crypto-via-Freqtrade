@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pagination } from '@/components/ui/pagination';
 import { formatCurrency, formatDateTime, formatNumber, formatPercentage } from '@/lib/utils';
 import { Chart } from '@/components/ui/chart';
-import { FileText, ChartBar, ChevronDown } from 'lucide-react';
+import { FileText, ChartBar, ChevronDown, AlertCircle } from 'lucide-react';
 
 export default function TradingHistory() {
   const [page, setPage] = useState(1);

@@ -58,8 +58,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-bold text-textPrimary flex items-center">
-                <i className="ri-robot-2-line mr-2 text-primary"></i>
-                BinanceAI Trader
+                <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-white">
+                  <i className="ri-line-chart-line text-lg"></i>
+                </div>
+                <span className="ml-2">TradingAI</span>
               </h1>
               <div className="flex items-center">
                 <span className="w-2 h-2 bg-primary rounded-full"></span>

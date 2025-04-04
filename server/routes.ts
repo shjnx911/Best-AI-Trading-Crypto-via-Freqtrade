@@ -584,10 +584,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         key = await storage.createApiKey(validatedData);
       }
       
-      // Initialize Binance API with new keys
-      binanceAPI.setApiKeys(apiKey, apiSecret, isTestnet || true);
-      
-      res.json({ success: true, message: "API keys updated successfully" });
+      // Initialize and test Binance API with new keys
+      try {
+        await binanceAPI.setApiKeys(apiKey, apiSecret, isTestnet || true);
+        res.json({ success: true, message: "API keys updated successfully" });
+      } catch (apiError) {
+        console.error('Binance API connection error:', apiError);
+        res.status(400).json({ 
+          message: `Could not connect to Binance API: ${apiError.message || 'Connection test failed'}` 
+        });
+      }
     } catch (error) {
       res.status(400).json({ message: `Invalid API key data: ${error}` });
     }

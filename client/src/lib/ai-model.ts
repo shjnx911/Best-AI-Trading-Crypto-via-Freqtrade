@@ -25,7 +25,16 @@ export async function trainAIModel(options: {
   epochs: number;
   batchSize: number;
 }): Promise<void> {
-  await apiRequest('POST', `${API_ENDPOINTS.AI}/train`, options);
+  try {
+    const response = await apiRequest('POST', `${API_ENDPOINTS.AI}/train`, options);
+    if (!response.ok) {
+      throw new Error(`Training failed with status ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error starting AI training:", error);
+    throw error;
+  }
 }
 
 export async function pauseAITraining(): Promise<void> {

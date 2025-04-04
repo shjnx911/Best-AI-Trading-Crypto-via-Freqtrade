@@ -20,10 +20,52 @@ export class BinanceAPI {
     }
   }
 
-  setApiKeys(apiKey: string, apiSecret: string, isTestnet: boolean): void {
+  async setApiKeys(apiKey: string, apiSecret: string, isTestnet: boolean): Promise<void> {
     this.apiKey = apiKey;
     this.apiSecret = apiSecret;
     this.isTestnet = isTestnet;
+    
+    // Test connection with the Binance API
+    try {
+      // For testnet, use testnet endpoints
+      const baseUrl = this.isTestnet ? 
+        'https://testnet.binancefuture.com' : 
+        'https://fapi.binance.com';
+        
+      const timestamp = Date.now();
+      const queryString = `timestamp=${timestamp}`;
+      
+      // Create signature using HMAC SHA256
+      const crypto = require('crypto');
+      const signature = crypto
+        .createHmac('sha256', this.apiSecret)
+        .update(queryString)
+        .digest('hex');
+        
+      // Make a test request to the account endpoint
+      const response = await fetch(
+        `${baseUrl}/fapi/v1/account?${queryString}&signature=${signature}`,
+        {
+          headers: {
+            'X-MBX-APIKEY': this.apiKey
+          }
+        }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`Binance API connection test failed: ${JSON.stringify(errorData)}`);
+        throw new Error(`Connection test failed: ${errorData.msg || response.statusText}`);
+      }
+      
+      console.log(`Successfully connected to Binance${this.isTestnet ? ' Testnet' : ''} API`);
+    } catch (error) {
+      console.error('Error testing Binance API connection:', error);
+      // Reset API keys since connection failed
+      this.apiKey = null;
+      this.apiSecret = null;
+      throw error;
+    }
   }
 
   async getAccountInfo(): Promise<AccountInfo> {

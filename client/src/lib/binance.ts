@@ -63,8 +63,16 @@ export async function toggleBot(isActive: boolean): Promise<void> {
 }
 
 export async function fetchBotSettings(): Promise<any> {
-  const response = await apiRequest('GET', `${API_ENDPOINTS.BOT}/settings`);
-  return response.json();
+  try {
+    const response = await apiRequest('GET', `${API_ENDPOINTS.BOT}/settings`);
+    if (response.status === 404) {
+      return null;
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching bot settings:", error);
+    return null;
+  }
 }
 
 export async function fetchBotStatus(): Promise<{
@@ -72,8 +80,24 @@ export async function fetchBotStatus(): Promise<{
   activeStrategies: string[];
   currentParameters: any;
 }> {
-  const response = await apiRequest('GET', `${API_ENDPOINTS.BOT}/status`);
-  return response.json();
+  try {
+    const response = await apiRequest('GET', `${API_ENDPOINTS.BOT}/status`);
+    if (response.status === 404) {
+      return {
+        isRunning: false,
+        activeStrategies: [],
+        currentParameters: {}
+      };
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching bot status:", error);
+    return {
+      isRunning: false,
+      activeStrategies: [],
+      currentParameters: {}
+    };
+  }
 }
 
 export async function saveApiKeys(apiKey: string, apiSecret: string, isTestnet: boolean): Promise<void> {

@@ -75,7 +75,27 @@ export default function BotSettings() {
 
   // Update settings handler
   const handleUpdateSettings = (updatedSettings: any) => {
-    updateSettingsMutation.mutate(updatedSettings);
+    // Ensure required fields from the schema are present
+    const settingsToUpdate = {
+      userId: 1, // Default user ID for testing
+      name: updatedSettings?.name || "Default Trading Bot",
+      minPositionSize: updatedSettings?.minPositionSize || 1,
+      maxPositionSize: updatedSettings?.maxPositionSize || 5,
+      maxPairs: updatedSettings?.maxPairs || 3,
+      dcaLevels: updatedSettings?.dcaLevels || 3,
+      profitTarget: updatedSettings?.profitTarget || 2,
+      stopLoss: updatedSettings?.stopLoss || 1.5,
+      dailyProfitTarget: updatedSettings?.dailyProfitTarget || 3,
+      strategyConfig: updatedSettings?.strategyConfig || { type: "Smart Money Concept", parameters: {} },
+      isActive: updatedSettings?.isActive || false,
+      trailingProfitEnabled: updatedSettings?.trailingProfitEnabled || false,
+      trailingProfitPercent: updatedSettings?.trailingProfitPercent || 0.5,
+      trailingStopLossEnabled: updatedSettings?.trailingStopLossEnabled || false,
+      trailingStopLossPercent: updatedSettings?.trailingStopLossPercent || 0.5,
+      ...updatedSettings
+    };
+    
+    updateSettingsMutation.mutate(settingsToUpdate);
   };
 
   // Update trading pairs
@@ -116,7 +136,29 @@ export default function BotSettings() {
 
   // Toggle bot status
   const handleToggleBot = () => {
-    toggleBotMutation.mutate(!botSettings?.isActive);
+    // Create default bot config if not exists
+    if (!botSettings) {
+      const defaultBotConfig = {
+        userId: 1,
+        name: "Default Trading Bot",
+        minPositionSize: 1,
+        maxPositionSize: 5,
+        maxPairs: 3,
+        dcaLevels: 3,
+        profitTarget: 2,
+        stopLoss: 1.5,
+        dailyProfitTarget: 3,
+        strategyConfig: { type: "Smart Money Concept", parameters: {} },
+        isActive: true,
+        trailingProfitEnabled: false,
+        trailingProfitPercent: 0.5,
+        trailingStopLossEnabled: false,
+        trailingStopLossPercent: 0.5
+      };
+      updateSettingsMutation.mutate(defaultBotConfig);
+    } else {
+      toggleBotMutation.mutate(!botSettings?.isActive);
+    }
   };
 
   if (isLoadingSettings) {
