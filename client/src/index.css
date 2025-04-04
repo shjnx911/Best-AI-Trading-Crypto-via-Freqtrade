@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+:root {
+  --background: 230 230 15;
+  --foreground: 220 220 230;
+  --card: 22 22 34;
+  --card-foreground: 220 220 230;
+  --popover: 22 22 34;
+  --popover-foreground: 220 220 230;
+  --primary: 158 93% 35%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 354 93% 63%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 30 30 45;
+  --muted-foreground: 132 142 156;
+  --accent: 226 100% 65%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 354 93% 63%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 43 43 59;
+  --input: 30 30 45;
+  --ring: 158 93% 35%;
+  --sidebar-background: 22 22 34;
+  --sidebar-foreground: 220 220 230;
+  --sidebar-primary: 158 93% 35%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 30 30 45;
+  --sidebar-accent-foreground: 132 142 156;
+  --sidebar-border: 43 43 59;
+  --sidebar-ring: 158 93% 35%;
+  --chart-1: 158 93% 35%;
+  --chart-2: 354 93% 63%;
+  --chart-3: 226 100% 65%;
+  --chart-4: 45 92% 51%;
+  --chart-5: 265 83% 61%;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--card));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted));
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: hsl(var(--border));
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: hsl(var(--foreground));
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: hsl(var(--primary));
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Loading indicator */
+.loading-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(14, 203, 129, 0.3);
+  border-radius: 50%;
+  border-top-color: hsl(var(--primary));
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Candlestick patterns visualization */
+.candlestick {
+  display: inline-block;
+  width: 8px;
+  margin: 0 1px;
+}
+
+.candlestick-bull {
+  background: hsl(var(--primary));
+}
+
+.candlestick-bear {
+  background: hsl(var(--secondary));
+}
+
+.candlestick-wick {
+  width: 1px;
+  background: hsl(var(--foreground));
+  margin: 0 auto;
+}
