@@ -66,6 +66,23 @@ class TrackingState:
         self.ai_prediction_cache = {}
         self.opportunity_score_threshold = 75
         self.opportunity_score_threshold_after_target = 85
+        
+        # DCA settings
+        self.use_dca = True
+        self.dca_enabled_pairs = []  # Pairs with active DCA
+        self.max_dca_count = 3  # Maximum number of DCA entries per position
+        self.dca_allocation = {
+            "initial": 0.4,  # 40% of position size for initial entry
+            "dca1": 0.3,     # 30% for first DCA
+            "dca2": 0.2,     # 20% for second DCA
+            "dca3": 0.1      # 10% for third DCA
+        }
+        self.dca_trigger_pct = {
+            "dca1": -1.5,    # First DCA at -1.5% from entry
+            "dca2": -3.0,    # Second DCA at -3.0% from entry
+            "dca3": -5.0     # Third DCA at -5.0% from entry
+        }
+        self.dca_positions = {}  # Track DCA positions by pair
 
     def update_daily_profit(self, profit_pct):
         with self.lock:
@@ -786,8 +803,25 @@ class ProfitOptimizer:
                 
                 sl_price = price * (1 + sl_pct/100)
             
-            # Tính lượng vốn để đầu tư
-            capital_fraction = min(0.3, risk_per_trade / (sl_pct/100))  # Max 30% of capital
+            # Tính lượng vốn để đầu tư dựa vào có sử dụng DCA hay không
+            use_dca = state.use_dca and pair in state.dca_enabled_pairs
+            
+            if use_dca:
+                # Nếu sử dụng DCA, phân bổ vốn theo tỷ lệ DCA
+                initial_capital_fraction = min(0.3, risk_per_trade / (sl_pct/100)) * state.dca_allocation["initial"]
+                dca_plan = {
+                    "enabled": True,
+                    "max_dca_count": state.max_dca_count,
+                    "allocation": state.dca_allocation,
+                    "trigger_levels": state.dca_trigger_pct,
+                    "estimated_avg_entry": self._calculate_estimated_avg_entry(price, side, state.dca_trigger_pct, state.dca_allocation)
+                }
+            else:
+                # Nếu không sử dụng DCA, sử dụng toàn bộ vốn cho entry ban đầu
+                initial_capital_fraction = min(0.3, risk_per_trade / (sl_pct/100))
+                dca_plan = {
+                    "enabled": False
+                }
             
             return {
                 "pair": pair,
@@ -802,9 +836,46 @@ class ProfitOptimizer:
                 "recommended_leverage": recommended_leverage,
                 "stoploss_percentage": sl_pct,
                 "stoploss_price": sl_price,
-                "capital_allocation": capital_fraction,
-                "daily_profit_status": daily_profit_status
+                "capital_allocation": initial_capital_fraction,
+                "daily_profit_status": daily_profit_status,
+                "dca_plan": dca_plan
             }
+            
+    def _calculate_estimated_avg_entry(self, current_price, side, trigger_levels, allocation):
+        """
+        Tính toán giá vào lệnh trung bình dự kiến dựa trên kế hoạch DCA
+        
+        Args:
+            current_price: Giá hiện tại
+            side: 'long' hoặc 'short'
+            trigger_levels: Dict các mức kích hoạt DCA (phần trăm)
+            allocation: Dict phân bổ vốn cho mỗi lần vào lệnh
+            
+        Returns:
+            float: Giá vào lệnh trung bình dự kiến
+        """
+        try:
+            # Tính toán giá dự kiến tại mỗi mức DCA
+            prices = {"initial": current_price}
+            
+            for level, pct in trigger_levels.items():
+                if side == "long":
+                    # Long: giá giảm theo phần trăm
+                    prices[level] = current_price * (1 + pct/100)  # pct is negative
+                else:
+                    # Short: giá tăng theo phần trăm
+                    prices[level] = current_price * (1 - pct/100)  # pct is negative for short too
+            
+            # Tính trung bình có trọng số
+            total_weight = sum(allocation.values())
+            avg_price = sum(prices[level] * weight for level, weight in allocation.items()) / total_weight
+            
+            return avg_price
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tính giá vào lệnh trung bình dự kiến: {str(e)}")
+            logger.exception(e)
+            return current_price
             
         except Exception as e:
             logger.error(f"Lỗi khi lấy khuyến nghị giao dịch: {str(e)}")
