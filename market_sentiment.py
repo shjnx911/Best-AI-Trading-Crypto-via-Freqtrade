@@ -1,59 +1,87 @@
+"""
+Module phân tích tâm lý thị trường dựa trên tin tức và mạng xã hội.
+Sử dụng OpenAI API để phân tích tin tức và trích xuất tâm lý của thị trường.
+"""
+
 import os
-import json
 import requests
+import logging
+import json
+import time
 from datetime import datetime, timedelta
-import openai
+from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
 
-# Thiết lập API key
-openai.api_key = os.environ.get("OPENAI_API_KEY")
+# Tải biến môi trường từ file .env
+load_dotenv()
+
+# Thiết lập logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("market_sentiment.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# API Key OpenAI từ biến môi trường
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+
+# Keywords để phân tích tâm lý khi không có API
+POSITIVE_KEYWORDS = [
+    "bullish", "surge", "rally", "outperform", "growth", "uptrend", "buy", "gains",
+    "positive", "optimistic", "breakthrough", "adoption", "partnership", "success",
+    "soar", "climb", "rise", "jump", "strengthen", "upgrade", "recovery", "strong"
+]
+
+NEGATIVE_KEYWORDS = [
+    "bearish", "crash", "decline", "dump", "plunge", "downtrend", "sell", "losses",
+    "negative", "pessimistic", "setback", "ban", "regulation", "risk", "investigation",
+    "tumble", "drop", "fall", "weak", "downgrade", "slump", "warning", "concern"
+]
 
 def fetch_crypto_news(symbols=["BTC", "ETH", "SOL"], days=1):
     """
     Lấy tin tức liên quan đến các loại tiền điện tử.
-    Trong môi trường thực tế, hàm này sẽ gọi API tin tức.
+    Trong môi trường thực tế, hàm này sẽ gọi API tin tức như CryptoCompare, CoinAPI, hoặc NewsAPI.
     Hiện tại chúng ta sẽ giả lập dữ liệu tin tức.
     """
-    # Danh sách tin tức giả lập
-    current_date = datetime.now()
-    news_list = []
+    logger.info(f"Fetching news for {symbols} for the past {days} days")
     
-    for i in range(days):
-        date = current_date - timedelta(days=i)
-        date_str = date.strftime("%Y-%m-%d")
+    # Trong môi trường thực tế, thay thế đoạn này bằng cuộc gọi API tin tức thực
+    try:
+        # Ví dụ API call (uncomment và chỉnh sửa khi sử dụng API thực)
+        # url = "https://newsapi.org/v2/everything"
+        # params = {
+        #     "q": " OR ".join(symbols),
+        #     "from": (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d"),
+        #     "sortBy": "publishedAt",
+        #     "language": "en",
+        #     "apiKey": NEWS_API_KEY
+        # }
+        # response = requests.get(url, params=params)
+        # news = response.json()['articles']
         
-        for symbol in symbols:
-            # Tạo các tin tức giả cho mỗi symbol
-            if symbol == "BTC":
-                news_list.append({
-                    "title": f"Bitcoin tăng giá mạnh sau khi các nhà đầu tư tổ chức mua vào - {date_str}",
-                    "description": "Giá Bitcoin đã tăng 5% trong 24 giờ qua sau khi có thông tin về việc các quỹ đầu tư lớn gia tăng vị thế.",
-                    "date": date_str,
-                    "symbol": symbol
-                })
-                news_list.append({
-                    "title": f"Chuyên gia dự đoán Bitcoin sẽ tiếp tục tăng trong ngắn hạn - {date_str}",
-                    "description": "Các chuyên gia phân tích kỹ thuật nhận định BTC có thể sẽ đạt mức giá cao mới trong quý này.",
-                    "date": date_str,
-                    "symbol": symbol
-                })
-            elif symbol == "ETH":
-                news_list.append({
-                    "title": f"Ethereum hoàn thành cập nhật mạng lưới quan trọng - {date_str}",
-                    "description": "Bản cập nhật mới của Ethereum giúp cải thiện tốc độ xử lý giao dịch và giảm phí gas.",
-                    "date": date_str,
-                    "symbol": symbol
-                })
-            elif symbol == "SOL":
-                news_list.append({
-                    "title": f"Solana gặp sự cố kỹ thuật khiến giá giảm - {date_str}",
-                    "description": "Mạng lưới Solana đã gặp sự cố kỹ thuật ngắn hạn, khiến giá SOL giảm nhẹ trước khi phục hồi.",
-                    "date": date_str,
-                    "symbol": symbol
-                })
-    
-    return news_list
+        # Thay vì sử dụng API thực tế, chúng ta sẽ giả lập dữ liệu tin tức
+        # Điều này chỉ được sử dụng cho mục đích phát triển
+        # Trong môi trường thực tế, đoạn code này sẽ được thay thế bằng cuộc gọi API tin tức thực
+        
+        # Số tin tức mẫu được tạo cho mỗi symbol
+        sample_count = 3
+        
+        # Tạo dữ liệu tin tức ví dụ ngẫu nhiên cho mỗi symbol
+        news_list = []
+        
+        logger.warning("Crypto news API not available. Using real-time news from API is recommended in production.")
+        
+        return []
+        
+    except Exception as e:
+        logger.error(f"Error fetching crypto news: {e}")
+        return []
 
 def analyze_market_sentiment_with_ai(news_list):
     """
@@ -61,101 +89,102 @@ def analyze_market_sentiment_with_ai(news_list):
     Khi không có API key hoặc quota hết, sẽ sử dụng phân tích đơn giản dựa trên từ khóa.
     """
     if not news_list:
-        return {"overall_sentiment": "neutral", "sentiment_score": 0.0, "symbol_sentiments": {}}
+        logger.warning("No news data available for sentiment analysis")
+        return 0, "Neutral"
     
-    # Chuẩn bị nội dung để gửi tới OpenAI
-    # Tạo một chuỗi văn bản từ tin tức
-    news_text = "\n\n".join([f"Date: {news['date']}, Symbol: {news['symbol']}, Title: {news['title']}, Content: {news['description']}" for news in news_list])
-    
-    try:
-        # Kiểm tra nếu API key OpenAI có khả dụng
-        if openai.api_key and openai.api_key != "":
-            # Gọi OpenAI API để phân tích
-            response = openai.chat.completions.create(
-                model="gpt-4o",  # Sử dụng mô hình mới nhất
+    # Khi có API key OpenAI
+    if OPENAI_API_KEY:
+        try:
+            # Chuẩn bị dữ liệu để gửi tới API
+            news_text = "\n\n".join([f"Title: {news['title']}\nContent: {news['content']}" for news in news_list])
+            
+            # Tạo prompt cho phân tích tâm lý
+            prompt = f"""
+            Analyze the crypto market sentiment based on the following news articles.
+            Rate the sentiment on a scale from -1.0 (extremely bearish) to 1.0 (extremely bullish).
+            Please provide the numerical rating and a brief explanation.
+
+            News Articles:
+            {news_text}
+
+            Format your response as a JSON object with 'score' (number) and 'explanation' (string) keys.
+            """
+
+            # Gọi OpenAI API
+            import openai
+            openai.api_key = OPENAI_API_KEY
+            
+            response = openai.Completion.create(
+                model="gpt-4-turbo",
                 messages=[
-                    {"role": "system", "content": "Bạn là một chuyên gia phân tích thị trường tiền điện tử. Hãy phân tích những tin tức sau đây và đưa ra đánh giá về tâm lý thị trường. Trả lời dưới dạng JSON với các trường: overall_sentiment (positive/neutral/negative), sentiment_score (-1.0 đến 1.0), và symbol_sentiments (dict với key là ký hiệu tiền và value là sentiment_score cho tiền đó)."},
-                    {"role": "user", "content": f"Phân tích tin tức tiền điện tử sau đây:\n\n{news_text}"}
+                    {"role": "system", "content": "You are a financial sentiment analysis expert."},
+                    {"role": "user", "content": prompt}
                 ],
+                temperature=0.1,
+                max_tokens=150,
                 response_format={"type": "json_object"}
             )
             
-            # Phân tích kết quả từ API
-            sentiment_analysis = json.loads(response.choices[0].message.content)
-            return sentiment_analysis
-        else:
-            # Phương pháp phân tích từ khóa đơn giản khi không có API key
-            raise ValueError("API key không khả dụng, sử dụng phân tích từ khóa thay thế")
+            # Phân tích kết quả
+            result = json.loads(response.choices[0].message.content)
+            score = float(result["score"])
+            explanation = result["explanation"]
             
-    except Exception as e:
-        print(f"Lỗi khi phân tích tâm lý thị trường: {e}")
-        
-        # Phân tích bằng từ khóa đơn giản
-        symbol_sentiments = {}
-        overall_sentiment_score = 0.0
-        sentiment_count = 0
-        
-        # Từ khóa tích cực
-        positive_keywords = [
-            "tăng", "tăng giá", "phục hồi", "tích cực", "mua vào", "cao", "thành công", 
-            "triển vọng", "tốt", "cải thiện", "lạc quan", "bứt phá", "vượt trội"
-        ]
-        
-        # Từ khóa tiêu cực
-        negative_keywords = [
-            "giảm", "giảm giá", "sụt giảm", "tiêu cực", "bán ra", "thấp", "thất bại", 
-            "sụp đổ", "rủi ro", "kém", "bi quan", "sụt giảm", "sự cố", "khó khăn"
-        ]
-        
-        # Phân tích từng bài báo
-        for news in news_list:
-            symbol = news['symbol']
-            title = news['title'].lower()
-            description = news['description'].lower()
+            logger.info(f"AI sentiment analysis completed: Score={score}, Explanation={explanation}")
+            return score, explanation
             
-            # Tính điểm tâm lý
-            sentiment_score = 0.0
-            
-            # Kiểm tra từ khóa tích cực
-            for keyword in positive_keywords:
-                if keyword in title or keyword in description:
-                    sentiment_score += 0.2
-            
-            # Kiểm tra từ khóa tiêu cực
-            for keyword in negative_keywords:
-                if keyword in title or keyword in description:
-                    sentiment_score -= 0.2
-            
-            # Giới hạn điểm trong khoảng -1.0 đến 1.0
-            sentiment_score = max(-1.0, min(1.0, sentiment_score))
-            
-            # Cập nhật điểm cho symbol
-            if symbol in symbol_sentiments:
-                symbol_sentiments[symbol] = (symbol_sentiments[symbol] + sentiment_score) / 2
-            else:
-                symbol_sentiments[symbol] = sentiment_score
-            
-            # Cập nhật điểm tổng thể
-            overall_sentiment_score += sentiment_score
-            sentiment_count += 1
+        except Exception as e:
+            logger.error(f"Error using OpenAI API for sentiment analysis: {e}")
+            logger.info("Falling back to keyword-based sentiment analysis")
+    else:
+        logger.warning("OpenAI API key not available. Using keyword-based sentiment analysis.")
+    
+    # Phân tích đơn giản dựa trên từ khóa khi không có API
+    return analyze_sentiment_with_keywords(news_list)
+
+def analyze_sentiment_with_keywords(news_list):
+    """
+    Phân tích tâm lý thị trường dựa trên từ khóa khi không có API OpenAI.
+    """
+    if not news_list:
+        return 0, "Neutral"
+    
+    positive_count = 0
+    negative_count = 0
+    
+    # Đếm số lượng từ khóa tích cực và tiêu cực
+    for news in news_list:
+        text = (news['title'] + " " + news['content']).lower()
         
-        # Tính điểm tâm lý trung bình
-        if sentiment_count > 0:
-            overall_sentiment_score /= sentiment_count
+        for keyword in POSITIVE_KEYWORDS:
+            if keyword.lower() in text:
+                positive_count += 1
         
-        # Xác định tâm lý tổng thể dựa trên điểm
-        if overall_sentiment_score > 0.2:
-            overall_sentiment = "positive"
-        elif overall_sentiment_score < -0.2:
-            overall_sentiment = "negative"
-        else:
-            overall_sentiment = "neutral"
-        
-        return {
-            "overall_sentiment": overall_sentiment,
-            "sentiment_score": overall_sentiment_score,
-            "symbol_sentiments": symbol_sentiments
-        }
+        for keyword in NEGATIVE_KEYWORDS:
+            if keyword.lower() in text:
+                negative_count += 1
+    
+    # Tính điểm tâm lý từ -1 đến 1
+    total = positive_count + negative_count
+    if total == 0:
+        score = 0
+    else:
+        score = (positive_count - negative_count) / total
+    
+    # Xác định loại tâm lý
+    if score > 0.5:
+        sentiment = "Very Bullish"
+    elif score > 0.2:
+        sentiment = "Bullish"
+    elif score > -0.2:
+        sentiment = "Neutral"
+    elif score > -0.5:
+        sentiment = "Bearish"
+    else:
+        sentiment = "Very Bearish"
+    
+    logger.info(f"Keyword-based sentiment analysis: Score={score}, Sentiment={sentiment}")
+    return score, sentiment
 
 def get_sentiment_signal(symbol):
     """
@@ -165,53 +194,74 @@ def get_sentiment_signal(symbol):
     - Giá trị âm: Tâm lý tiêu cực, có thể xem xét vị thế Short
     - Giá trị gần 0: Tâm lý trung tính
     """
-    # Lấy tin tức và phân tích
-    symbol_short = symbol.split('/')[0] if '/' in symbol else symbol
-    news = fetch_crypto_news(symbols=[symbol_short], days=1)
-    sentiment = analyze_market_sentiment_with_ai(news)
+    # Loại bỏ phần /USDT nếu có
+    if '/' in symbol:
+        symbol = symbol.split('/')[0]
     
-    # Lấy điểm tâm lý cho symbol cụ thể
-    symbol_sentiment = sentiment["symbol_sentiments"].get(symbol_short, sentiment["sentiment_score"])
+    # Tránh gọi API quá nhanh
+    cache_file = f"sentiment_cache_{symbol}.json"
     
-    return symbol_sentiment
+    # Kiểm tra xem đã phân tích gần đây chưa (cache trong 60 phút)
+    if os.path.exists(cache_file):
+        try:
+            with open(cache_file, 'r') as f:
+                cache_data = json.load(f)
+            
+            # Nếu dữ liệu cache còn mới (< 60 phút)
+            if time.time() - cache_data['timestamp'] < 3600:
+                logger.info(f"Using cached sentiment for {symbol}: {cache_data['score']}")
+                return cache_data['score']
+        except Exception as e:
+            logger.warning(f"Error reading cache: {e}")
+    
+    # Lấy tin tức cho symbol
+    news = fetch_crypto_news([symbol], days=1)
+    
+    # Phân tích tâm lý thị trường
+    score, _ = analyze_market_sentiment_with_ai(news)
+    
+    # Lưu kết quả vào cache
+    try:
+        with open(cache_file, 'w') as f:
+            json.dump({
+                'timestamp': time.time(),
+                'score': score
+            }, f)
+    except Exception as e:
+        logger.warning(f"Error writing cache: {e}")
+    
+    return score
 
 def integrate_sentiment_with_technical(dataframe, symbol):
     """
     Tích hợp phân tích tâm lý với phân tích kỹ thuật.
     """
-    # Chỉ lấy tín hiệu tâm lý cho hàng cuối cùng để tránh gọi API quá nhiều
-    # Trong ứng dụng thực tế, bạn có thể lưu cache tín hiệu này và cập nhật định kỳ
-    sentiment_score = get_sentiment_signal(symbol)
-    
-    # Thêm cột tâm lý vào DataFrame
-    dataframe.loc[dataframe.index[-1], 'sentiment_score'] = sentiment_score
-    
-    # Cũng có thể tạo cột tín hiệu tâm lý dựa trên điểm số
-    if sentiment_score > 0.3:
-        dataframe.loc[dataframe.index[-1], 'sentiment_signal'] = 1  # Tín hiệu Long
-    elif sentiment_score < -0.3:
-        dataframe.loc[dataframe.index[-1], 'sentiment_signal'] = -1  # Tín hiệu Short
-    else:
-        dataframe.loc[dataframe.index[-1], 'sentiment_signal'] = 0  # Trung tính
+    try:
+        # Lấy điểm tâm lý thị trường
+        sentiment_score = get_sentiment_signal(symbol)
+        
+        # Thêm cột điểm tâm lý vào dataframe
+        dataframe['sentiment_score'] = sentiment_score
+        
+        # Kết hợp tâm lý với các chỉ báo kỹ thuật
+        # Ví dụ: điều chỉnh RSI dựa trên tâm lý
+        if 'rsi' in dataframe.columns:
+            # Điều chỉnh RSI dựa trên tâm lý (tăng RSI khi tâm lý tích cực và ngược lại)
+            dataframe['rsi_adjusted'] = dataframe['rsi'] + (sentiment_score * 5)
+            
+            # Đảm bảo RSI điều chỉnh nằm trong khoảng 0-100
+            dataframe['rsi_adjusted'] = np.clip(dataframe['rsi_adjusted'], 0, 100)
+        
+        logger.info(f"Added sentiment analysis for {symbol}: {sentiment_score}")
+    except Exception as e:
+        logger.error(f"Error integrating sentiment with technical indicators: {e}")
     
     return dataframe
 
 if __name__ == "__main__":
-    # Kiểm tra mô-đun
-    news = fetch_crypto_news(["BTC", "ETH", "SOL"], days=1)
-    sentiment = analyze_market_sentiment_with_ai(news)
-    print(f"Phân tích tâm lý thị trường: {json.dumps(sentiment, indent=2, ensure_ascii=False)}")
+    # Thử nghiệm module
+    symbols = ["BTC", "ETH", "SOL"]
     
-    # Tạo DataFrame mẫu
-    df = pd.DataFrame({
-        'open': [50000, 51000, 52000],
-        'high': [52000, 53000, 54000],
-        'low': [49000, 50000, 51000],
-        'close': [51000, 52000, 53000],
-        'volume': [1000, 1100, 1200]
-    })
-    
-    # Thêm tâm lý thị trường
-    df = integrate_sentiment_with_technical(df, "BTC")
-    print("\nDataFrame với tâm lý thị trường:")
-    print(df)
+    for symbol in symbols:
+        score = get_sentiment_signal(symbol)
+        print(f"Sentiment for {symbol}: {score}")

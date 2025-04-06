@@ -1,59 +1,14 @@
 {
-    "dry_run": true,
-    "max_open_trades": 4,
+    "max_open_trades": 5,
     "stake_currency": "USDT",
-    "stake_amount": "100",
+    "stake_amount": "unlimited",
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
-    "dry_run_wallet": 1000,
-    "timeframe": "5m",
-    "exchange": {
-        "name": "binance",
-        "key": "",
-        "secret": "",
-        "ccxt_config": {
-            "enableRateLimit": true
-        },
-        "ccxt_async_config": {
-            "enableRateLimit": true,
-            "rateLimit": 50
-        },
-        "pair_whitelist": [
-            "BTC/USDT:USDT",
-            "ETH/USDT:USDT",
-            "BNB/USDT:USDT",
-            "SOL/USDT:USDT",
-            "XRP/USDT:USDT"
-        ],
-        "pair_blacklist": []
-    },
-    "strategy": "EnhancedCryptoStrategy",
-    "strategy_path": "user_data/strategies/",
-    "stoploss": -0.02,
-    "trailing_stop": true,
-    "trailing_stop_positive": 0.01,
-    "trailing_stop_positive_offset": 0.02,
-    "trailing_only_offset_is_reached": true,
-    "use_custom_stoploss": true,
-    "margin_mode": "isolated",
-    "initial_state": "running",
-    "unfilledtimeout": {
-        "unit": "seconds",
-        "entry": 300,
-        "exit": 300
-    },
-    "order_types": {
-        "entry": "market",
-        "exit": "market",
-        "emergency_exit": "market",
-        "force_exit": "market",
-        "force_entry": "market",
-        "stoploss": "market",
-        "stoploss_on_exchange": false,
-        "stoploss_on_exchange_interval": 30
-    },
-    "entry_pricing": {
-        "price_side": "other",
+    "dry_run": false,
+    "cancel_open_orders_on_exit": false,
+    "bid_strategy": {
+        "price_side": "ask",
+        "ask_last_balance": 0.0,
         "use_order_book": false,
         "order_book_top": 1,
         "check_depth_of_market": {
@@ -61,45 +16,69 @@
             "bids_to_ask_delta": 1
         }
     },
-    "exit_pricing": {
-        "price_side": "other",
+    "ask_strategy": {
+        "price_side": "bid",
+        "bid_last_balance": 0.0,
         "use_order_book": false,
         "order_book_top": 1
     },
+    "exchange": {
+        "name": "binance",
+        "key": "",
+        "secret": "",
+        "ccxt_config": {
+            "enableRateLimit": true,
+            "futures": true
+        },
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "futures": true
+        },
+        "pair_whitelist": [
+            "BTC/USDT:USDT",
+            "ETH/USDT:USDT",
+            "SOL/USDT:USDT",
+            "BNB/USDT:USDT",
+            "XRP/USDT:USDT",
+            "DOGE/USDT:USDT",
+            "ADA/USDT:USDT",
+            "SHIB/USDT:USDT",
+            "AVAX/USDT:USDT",
+            "MATIC/USDT:USDT"
+        ],
+        "pair_blacklist": [
+            ".*UP/USDT.*",
+            ".*DOWN/USDT.*"
+        ]
+    },
     "pairlists": [
-        {
-            "method": "StaticPairList"
-        }
+        {"method": "StaticPairList"}
     ],
-    "edge": {
+    "telegram": {
         "enabled": false,
-        "process_throttle_secs": 3600,
-        "calculate_since_number_of_days": 14,
-        "allowed_risk": 0.01,
-        "stoploss_range_min": -0.03,
-        "stoploss_range_max": -0.01,
-        "stoploss_range_step": 0.001,
-        "minimum_winrate": 0.60,
-        "minimum_expectancy": 0.10,
-        "min_trade_number": 10,
-        "max_trade_duration_minute": 1440,
-        "remove_pumps": false
+        "token": "",
+        "chat_id": ""
     },
     "api_server": {
-        "enabled": false,
+        "enabled": true,
         "listen_ip_address": "0.0.0.0",
         "listen_port": 8080,
         "verbosity": "error",
-        "enable_openapi": false,
-        "jwt_secret_key": "",
-        "ws_token": "",
-        "CORS_origins": [],
-        "username": "",
-        "password": ""
+        "enable_openapi": true,
+        "jwt_secret_key": "your-secret-key",
+        "CORS_origins": ["http://localhost:8080"],
+        "username": "admin",
+        "password": "admin"
     },
-    "bot_name": "AI_Crypto_Bot",
-    "forcebuy_enable": false,
+    "bot_name": "enhanced_crypto_bot",
+    "initial_state": "running",
+    "force_entry_enable": true,
     "internals": {
         "process_throttle_secs": 5
-    }
+    },
+    "strategy": "EnhancedCryptoStrategy",
+    "strategy_path": "user_data/strategies/",
+    "db_url": "sqlite:///user_data/trades.sqlite",
+    "logfile": "user_data/logs/freqtrade.log",
+    "user_data_dir": "user_data/"
 }
