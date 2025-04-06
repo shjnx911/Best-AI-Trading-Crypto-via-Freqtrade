@@ -5,6 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
     "ccxt>=4.4.73",
+    "joblib>=1.4.2",
     "lightgbm>=4.6.0",
     "matplotlib>=3.10.1",
     "numpy>=2.2.4",

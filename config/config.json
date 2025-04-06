@@ -1,25 +1,31 @@
 {
-    "max_open_trades": 5,
+    "max_open_trades": 3,
     "stake_currency": "USDT",
-    "stake_amount": "unlimited",
+    "stake_amount": 60,
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
-    "dry_run": false,
+    "timeframe": "5m",
+    "dry_run": true,
     "cancel_open_orders_on_exit": false,
-    "bid_strategy": {
-        "price_side": "ask",
-        "ask_last_balance": 0.0,
-        "use_order_book": false,
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "same",
+        "use_order_book": true,
         "order_book_top": 1,
+        "price_last_balance": 0.0,
         "check_depth_of_market": {
             "enabled": false,
             "bids_to_ask_delta": 1
         }
     },
-    "ask_strategy": {
-        "price_side": "bid",
-        "bid_last_balance": 0.0,
-        "use_order_book": false,
+    "exit_pricing": {
+        "price_side": "same",
+        "use_order_book": true,
         "order_book_top": 1
     },
     "exchange": {
@@ -27,58 +33,98 @@
         "key": "",
         "secret": "",
         "ccxt_config": {
-            "enableRateLimit": true,
-            "futures": true
+            "enableRateLimit": true
         },
         "ccxt_async_config": {
             "enableRateLimit": true,
-            "futures": true
+            "rateLimit": 50
         },
         "pair_whitelist": [
             "BTC/USDT:USDT",
             "ETH/USDT:USDT",
             "SOL/USDT:USDT",
             "BNB/USDT:USDT",
-            "XRP/USDT:USDT",
-            "DOGE/USDT:USDT",
-            "ADA/USDT:USDT",
-            "SHIB/USDT:USDT",
-            "AVAX/USDT:USDT",
-            "MATIC/USDT:USDT"
+            "AVAX/USDT:USDT"
         ],
         "pair_blacklist": [
-            ".*UP/USDT.*",
-            ".*DOWN/USDT.*"
-        ]
+            "BNB/.*",
+            ".*BUSD",
+            ".*TUSD",
+            ".*USDC",
+            ".*USDT_FUTURES",
+            ".*DOWNUSDT",
+            ".*UPUSDT"
+        ],
+        "futures": true,
+        "futures_leverage": 3,
+        "futures_leverage_mode": "isolated",
+        "futures_position_mode": "one_way"
     },
     "pairlists": [
-        {"method": "StaticPairList"}
+        {
+            "method": "StaticPairList"
+        },
+        {
+            "method": "VolumePairList",
+            "number_assets": 20,
+            "sort_key": "quoteVolume",
+            "min_value": 0,
+            "refresh_period": 1800
+        },
+        {
+            "method": "SpreadFilter",
+            "max_spread_ratio": 0.005
+        }
     ],
+    "edge": {
+        "enabled": false,
+        "process_throttle_secs": 3600,
+        "calculate_since_number_of_days": 7,
+        "allowed_risk": 0.01,
+        "stoploss_range_min": -0.01,
+        "stoploss_range_max": -0.1,
+        "stoploss_range_step": -0.01,
+        "minimum_winrate": 0.60,
+        "minimum_expectancy": 0.20,
+        "min_trade_number": 10,
+        "max_trade_duration_minute": 1440,
+        "remove_pumps": false
+    },
     "telegram": {
         "enabled": false,
         "token": "",
-        "chat_id": ""
+        "chat_id": "",
+        "notification_settings": {
+            "status": "on",
+            "warning": "on",
+            "startup": "on",
+            "entry": "on",
+            "exit": "on",
+            "entry_fill": "on",
+            "exit_fill": "on",
+            "protection_trigger": "on",
+            "strategy_msg": "on"
+        },
+        "reload": true,
+        "balance_dust_level": 0.01
     },
     "api_server": {
         "enabled": true,
         "listen_ip_address": "0.0.0.0",
         "listen_port": 8080,
         "verbosity": "error",
-        "enable_openapi": true,
-        "jwt_secret_key": "your-secret-key",
-        "CORS_origins": ["http://localhost:8080"],
-        "username": "admin",
-        "password": "admin"
+        "jwt_secret_key": "",
+        "CORS_origins": [],
+        "username": "",
+        "password": ""
     },
     "bot_name": "enhanced_crypto_bot",
     "initial_state": "running",
-    "force_entry_enable": true,
+    "force_entry_enable": false,
     "internals": {
         "process_throttle_secs": 5
     },
     "strategy": "EnhancedCryptoStrategy",
     "strategy_path": "user_data/strategies/",
-    "db_url": "sqlite:///user_data/trades.sqlite",
-    "logfile": "user_data/logs/freqtrade.log",
-    "user_data_dir": "user_data/"
+    "use_top_pairs": true
 }

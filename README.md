@@ -1,81 +1,152 @@
-# FreqTrade AI Trading Bot cho Cryptocurrency
+# AI Trading Bot cho Binance Futures
 
-Bot giao dịch cryptocurrency sử dụng mô hình AI được tăng cường với LightGBM để tạo tín hiệu giao dịch trên thị trường Futures của Binance.
+Hệ thống giao dịch tiên tiến tích hợp AI cho Binance Futures, giúp đạt mục tiêu lợi nhuận nhất quán với quản lý rủi ro tối ưu.
 
-## Giới thiệu
+## Tính năng chính
 
-Dự án này sử dụng các mô hình học máy kết hợp với các chỉ báo kỹ thuật để đưa ra quyết định giao dịch cho các cặp cryptocurrency. Bot được thiết kế để hoạt động trên thị trường Futures Binance, hỗ trợ cả vị thế Long và Short với đòn bẩy động.
+- **Chiến lược giao dịch AI** kết hợp phân tích kỹ thuật truyền thống và dự đoán từ mô hình máy học
+- **Phân tích tâm lý thị trường** từ tin tức sử dụng OpenAI API
+- **Tối ưu hóa GPU** cho việc huấn luyện mô hình nhanh hơn sử dụng AMD RX6600
+- **Quản lý rủi ro thông minh** với cắt lỗ động, đòn bẩy linh hoạt và phân bổ vốn tối ưu 
+- **Tự động hóa hoàn toàn** với lịch huấn luyện lại mô hình, sao lưu và giám sát
+- **Xếp hạng cặp tiền** tự động để chọn top 5 cặp tiền có tiềm năng giao dịch tốt nhất
+- **Hỗ trợ cả Long và Short** trên thị trường Binance Futures
 
-## Chức năng chính
+## Cài đặt trên Windows
 
-1. **Chiến lược AI Tích hợp**: Sử dụng mô hình LightGBM để phân tích xu hướng, biến động và điểm đảo chiều.
-2. **Hỗ trợ Futures**: Giao dịch trên thị trường Futures với cả vị thế Long và Short.
-3. **Đòn bẩy động**: Điều chỉnh đòn bẩy (2-5x) dựa trên biến động thị trường hiện tại.
-4. **Quản lý rủi ro**: Giới hạn cỡ vị thế tối đa 30% cho mỗi cặp giao dịch và cắt lỗ thông minh.
-5. **Backtesting**: Khả năng kiểm tra hiệu suất chiến lược trên dữ liệu lịch sử.
-6. **Tích hợp GPU**: Tối ưu hiệu suất trên GPU AMD RX6600 bằng ROCm.
+### Yêu cầu hệ thống
+- Windows 10/11
+- Python 3.9+ 
+- AMD RX6600 GPU
+- RAM 32GB
+- CPU Intel i5-12400k trở lên
 
-## Kết quả mô phỏng
+### Bước 1: Cài đặt
 
-![Kết quả mô phỏng](simulation_results.png)
-
-## Cấu trúc dự án
-
-```
-├── config/                 # Các file cấu hình
-│   ├── config.json         # Cấu hình giao dịch chính
-│   └── backtest_config.json # Cấu hình cho backtesting
-├── user_data/
-│   ├── models/             # Lưu trữ các mô hình AI đã huấn luyện
-│   └── strategies/
-│       └── enhanced_crypto_strategy.py # Chiến lược giao dịch chính
-├── run_freqtrade.py        # Script thực thi FreqTrade
-├── setup_workflow.py       # Cấu hình workflow cho Replit
-├── simulation.py           # Mô phỏng chiến lược trong môi trường giới hạn
-├── train_ai_models.py      # Huấn luyện các mô hình AI
-└── simulation_results.png  # Kết quả giả lập giao dịch
-```
-
-## Cài đặt và sử dụng
-
-### Huấn luyện mô hình
+Chạy file `install.bat` để cài đặt tất cả các phụ thuộc cần thiết:
 
 ```
-python train_ai_models.py
+install.bat
 ```
 
-Lệnh này sẽ tải dữ liệu từ Binance, thêm các chỉ báo kỹ thuật và huấn luyện mô hình học máy cho dự đoán xu hướng, biến động và điểm đảo chiều.
+File này sẽ:
+- Tạo môi trường ảo Python
+- Cài đặt FreqTrade và các thư viện cần thiết
+- Thiết lập các thư mục cần thiết 
+- Tạo file `run.bat` để dễ dàng khởi động bot
 
-### Chạy giả lập
+### Bước 2: Cấu hình
 
-```
-python simulation.py
-```
-
-Lệnh này sẽ tạo dữ liệu giả lập và chạy chiến lược giao dịch trên dữ liệu này để kiểm tra hiệu suất.
-
-### Chạy Backtesting
+Sửa file `.env` để thêm API keys của bạn:
 
 ```
-python run_freqtrade.py --mode backtest
+BINANCE_API_KEY=your_binance_api_key
+BINANCE_API_SECRET=your_binance_api_secret
+OPENAI_API_KEY=your_openai_api_key
+
+# Thêm thông tin Telegram nếu muốn nhận thông báo
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_CHAT_ID=your_telegram_chat_id
 ```
 
-### Chạy giao dịch thực
+Hoặc chạy trình hướng dẫn thiết lập cấu hình:
 
 ```
-python run_freqtrade.py --mode trade
+python setup_config.py --wizard
 ```
 
-## Hiệu suất và mục tiêu
+### Bước 3: Huấn luyện mô hình AI
 
-- Mục tiêu lợi nhuận hàng ngày: khoảng 3%
-- Quản lý rủi ro thận trọng với đòn bẩy điều chỉnh tự động
-- Xác định và tận dụng biến động thị trường một cách thông minh
-- Hỗ trợ nhiều cặp tiền để phân tán rủi ro
+Huấn luyện các mô hình AI trước khi giao dịch:
 
-## Đổi mới và công nghệ
+```
+python run_freqtrade.py --mode train
+```
 
-- Sử dụng LightGBM cho hiệu suất và khả năng mở rộng tốt
-- Hỗ trợ AMD GPU (RX6600) thông qua ROCm
-- Xây dựng chiến lược tự điều chỉnh dựa trên điều kiện thị trường
-- Phân tích nhiều khung thời gian để xác nhận tín hiệu
+hoặc chọn tùy chọn "1. Train AI models" trong menu `run.bat`
+
+## Sử dụng
+
+### Chạy Bot
+
+Chạy file `run.bat` và chọn một trong các tùy chọn:
+
+1. **Train AI models** - Huấn luyện lại các mô hình AI
+2. **Run backtest** - Chạy backtesting để kiểm tra hiệu suất chiến lược
+3. **Run trading bot** - Khởi động bot giao dịch thực
+4. **Run simulation** - Chạy mô phỏng trên dữ liệu giả lập
+5. **Exit** - Thoát
+
+### Tìm Top Cặp Tiền
+
+Để xác định top 5 cặp tiền có tiềm năng giao dịch cao nhất:
+
+```
+python pair_ranking.py
+```
+
+Kết quả sẽ được lưu vào `pair_ranking.json` và tạo cấu hình mới `config/top_pairs_config.json`.
+
+### Giám sát Bot
+
+Giám sát trạng thái và hiệu suất của bot:
+
+```
+python monitoring.py --check-health
+python monitoring.py --generate-report
+```
+
+## Cấu trúc Dự án
+
+```
+├── config/                      # Thư mục chứa file cấu hình
+│   ├── config.json              # Cấu hình chính cho giao dịch thật
+│   └── backtest_config.json     # Cấu hình cho backtesting
+├── user_data/                   # Thư mục dữ liệu người dùng (FreqTrade)
+│   ├── strategies/              # Thư mục chiến lược
+│   │   └── enhanced_crypto_strategy.py  # Chiến lược giao dịch chính
+│   ├── models/                  # Thư mục lưu mô hình AI
+│   ├── data/                    # Dữ liệu thị trường
+│   ├── logs/                    # Logs
+│   └── backups/                 # Sao lưu
+├── market_sentiment.py          # Module phân tích tâm lý thị trường
+├── train_ai_models.py           # Script huấn luyện mô hình AI
+├── run_freqtrade.py             # Script chạy FreqTrade
+├── pair_ranking.py              # Xếp hạng và lọc cặp tiền tiềm năng
+├── simulation.py                # Mô phỏng chiến lược
+├── monitoring.py                # Hệ thống giám sát bot
+├── scheduler.py                 # Quản lý lịch các tác vụ tự động
+├── setup_config.py              # Trình thiết lập cấu hình
+├── run.bat                      # Script chạy bot trên Windows
+├── install.bat                  # Script cài đặt trên Windows
+└── .env                         # File chứa biến môi trường và API keys
+```
+
+## Cấu hình Khuyến nghị
+
+### Cấu hình Giao dịch
+- **Số cặp giao dịch đồng thời**: 3 (đã được tối ưu)
+- **Cắt lỗ**: 2% (có thể điều chỉnh tùy theo khẩu vị rủi ro)
+- **Đòn bẩy**: 3x mặc định, tối đa 5x (điều chỉnh động theo biến động thị trường)
+- **Khung thời gian**: 5m (hỗ trợ 15m, 1h, 4h)
+
+### Cấu hình GPU (AMD RX6600)
+Sử dụng OpenCL để tăng tốc LightGBM:
+```
+GPU_PLATFORM_ID=0
+GPU_DEVICE_ID=0
+```
+
+## Quản lý Rủi ro
+
+Hệ thống tích hợp nhiều lớp quản lý rủi ro:
+
+1. **Cắt lỗ Thông minh**: Điều chỉnh dựa trên ATR và biến động thị trường
+2. **Trailing Stop**: Bảo vệ lợi nhuận khi thị trường đảo chiều
+3. **Đòn bẩy Động**: Tự động điều chỉnh đòn bẩy từ 2x đến 5x tùy thuộc vào biến động
+4. **Phân bổ Vốn Tối ưu**: Mỗi cặp sử dụng tối đa 33% vốn giao dịch
+5. **Lọc Cặp Thông minh**: Chỉ giao dịch top 5 cặp tiền có tiềm năng cao nhất
+
+## Giấy phép
+
+[MIT License](LICENSE)

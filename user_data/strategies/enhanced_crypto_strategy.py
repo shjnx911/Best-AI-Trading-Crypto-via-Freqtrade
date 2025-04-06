@@ -146,10 +146,10 @@ class EnhancedCryptoStrategy(IStrategy):
     leverage_default = 3
     
     # Đòn bẩy tối đa
-    leverage_max = 5
+    leverage_max = 8
     
     # Phần trăm tối đa của tài sản dùng cho một cặp
-    max_pair_stake = 30.0
+    max_pair_stake = 33.0  # Điều chỉnh để tối đa 3 cặp (3 x 33% ~ 100% tài sản)
     
     # Đường dẫn đến thư mục mô hình AI
     models_dir = os.path.join('user_data', 'models')
@@ -566,11 +566,11 @@ class EnhancedCryptoStrategy(IStrategy):
             
             # Điều chỉnh đòn bẩy dựa trên biến động
             if volatility > 2.5:  # Biến động cao
-                return 2  # Đòn bẩy thấp
+                return 3  # Đòn bẩy tối thiểu
             elif volatility > 1.5:  # Biến động trung bình
-                return 3  # Đòn bẩy trung bình
+                return 5  # Đòn bẩy trung bình
             else:  # Biến động thấp
-                return min(5, max_leverage)  # Đòn bẩy cao
+                return min(8, max_leverage)  # Đòn bẩy cao nhất, không vượt quá max_leverage
                 
         except Exception as e:
             logger.warning(f"Lỗi khi tính toán đòn bẩy: {e}")
