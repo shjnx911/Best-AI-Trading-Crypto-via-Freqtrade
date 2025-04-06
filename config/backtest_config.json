@@ -1,0 +1,59 @@
+{
+    "max_open_trades": 4,
+    "stake_currency": "USDT",
+    "stake_amount": "100",
+    "timeframe": "5m",
+    "exchange": {
+        "name": "binance",
+        "key": "",
+        "secret": "",
+        "pair_whitelist": [
+            "BTC/USDT:USDT",
+            "ETH/USDT:USDT",
+            "BNB/USDT:USDT",
+            "SOL/USDT:USDT",
+            "XRP/USDT:USDT"
+        ],
+        "pair_blacklist": []
+    },
+    "strategy": "EnhancedCryptoStrategy",
+    "strategy_path": "user_data/strategies/",
+    "stoploss": -0.02,
+    "trailing_stop": true,
+    "trailing_stop_positive": 0.01,
+    "trailing_stop_positive_offset": 0.02,
+    "trailing_only_offset_is_reached": true,
+    "use_custom_stoploss": true,
+    "margin_mode": "isolated",
+    "unfilledtimeout": {
+        "entry": 300,
+        "exit": 300
+    },
+    "order_types": {
+        "entry": "limit",
+        "exit": "limit",
+        "stoploss": "market",
+        "stoploss_on_exchange": false
+    },
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1
+    },
+    "exit_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList"
+        }
+    ],
+    "bot_name": "AI_Crypto_Backtest",
+    "internals": {
+        "process_throttle_secs": 5
+    },
+    "dataformat_ohlcv": "json",
+    "dataformat_trades": "json"
+}
