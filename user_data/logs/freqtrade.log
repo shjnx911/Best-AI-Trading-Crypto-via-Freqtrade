@@ -1,0 +1,22 @@
+2025-04-06 16:18:24,549 - freqtrade - INFO - Thực hiện backtest với chiến lược EnhancedCryptoStrategy
+2025-04-06 16:18:24,549 - freqtrade - INFO - Khung thời gian: 20230401-20230501
+2025-04-06 16:18:28,055 - freqtrade - ERROR - Lỗi khi thực hiện backtest cho BTC/USDT:USDT: binance GET https://api.binance.com/api/v3/exchangeInfo 451  {
+  "code": 0,
+  "msg": "Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error."
+}
+2025-04-06 16:18:28,183 - freqtrade - ERROR - Lỗi khi thực hiện backtest cho ETH/USDT:USDT: binance GET https://api.binance.com/api/v3/exchangeInfo 451  {
+  "code": 0,
+  "msg": "Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error."
+}
+2025-04-06 16:18:28,297 - freqtrade - ERROR - Lỗi khi thực hiện backtest cho SOL/USDT:USDT: binance GET https://api.binance.com/api/v3/exchangeInfo 451  {
+  "code": 0,
+  "msg": "Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error."
+}
+2025-04-06 16:18:28,297 - freqtrade - INFO - 
+=== KẾT QUẢ BACKTEST ===
+2025-04-06 16:18:28,297 - freqtrade - INFO - Tổng lợi nhuận: 0.00%
+2025-04-06 16:18:28,297 - freqtrade - INFO - Tổng số giao dịch: 0
+2025-04-06 16:18:28,297 - freqtrade - ERROR - Lỗi khi thực hiện backtest: division by zero
+2025-04-06 16:18:28,298 - freqtrade - INFO - Kết quả backtest: {
+  "error": "division by zero"
+}
